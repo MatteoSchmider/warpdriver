@@ -8,14 +8,14 @@
 
 class WarpDriver {
 public:
-  typedef enum MotorType {
+  enum MotorType {
     NONE = 0,
     SINGLE_PHASE_DC = 1,
     TWO_PHASE_STEPPER = 2,
     THREE_PHASE_BLDC = 3
   };
 
-  typedef enum MotionMode {
+  enum MotionMode {
     STOPPED = 0,
     TORQUE = 1,
     VELOCITY = 2,
@@ -23,7 +23,7 @@ public:
     UQ_UD_EXT = 8,
   };
 
-  typedef enum StatusMask {
+  enum StatusMask {
     PID_X_TARGET_LIMIT = 0x1,
     PID_X_TARGET_DDT_LIMIT = 0x2,
     PID_X_ERRSUM_LIMIT = 0x4,
@@ -56,7 +56,7 @@ public:
     AENC_N = 0x40000000
   };
 
-  typedef struct CalibrationData {
+  struct CalibrationData {
     int16_t encoderOffset;
     int16_t i0Offset;
     int16_t i1Offset;

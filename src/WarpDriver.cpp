@@ -139,7 +139,7 @@ WarpDriver::autoCalibrate(uint64_t maxNumRetries, uint64_t numRetriesSuccess,
   start = 0;
   uint32_t i0 = 0;
   uint32_t i0Diff = 0;
-  bool done = false;
+  done = false;
   for (uint64_t i = 0; !done; i++) {
     i0Diff = getAdcRawDataI0();
     i0 += i0Diff;
@@ -161,7 +161,7 @@ WarpDriver::autoCalibrate(uint64_t maxNumRetries, uint64_t numRetriesSuccess,
   start = 0;
   uint32_t i1 = 0;
   uint32_t i1Diff = 0;
-  bool done = false;
+  done = false;
   for (uint64_t i = 0; !done; i++) {
     i1Diff = getAdcRawDataI0();
     i1 += i1Diff;
