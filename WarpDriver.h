@@ -1,9 +1,6 @@
-
 #pragma once
 
 #include "SPIAdapter.h"
-
-#include <inttypes.h>
 
 #include "TMC-API/tmc/ic/TMC4671/TMC4671_Register.h"
 #include "TMC-API/tmc/ic/TMC4671/TMC4671_Variants.h"
@@ -65,81 +62,75 @@ public:
     int16_t i1Offset;
   };
 
+  // Constructor
   WarpDriver(const SPIAdapter &device, MotorType motorType, uint16_t numPoles,
-             CalibrationData calibration);
-
-  // TMC4671 section
-
-  // Get raw adc current values for calibration
-  uint16_t getAdcRawDataI0();
-  uint16_t getAdcRawDataI1();
-  uint16_t getAdcRawDataVM();
-
-  // Get phase currents in mA for power consumption monitoring
-  int16_t getIux(); // ADC_IWY_IUX
-  int16_t getIv();  // ADC_IV
-  int16_t getIwy(); // ADC_IWY_IUX
-
-  // Get the actual torque in mA
-  int16_t getTorque(); // PID_TORQUE_FLUX_ACTUAL
-  // Get the velocity in int32_t driver's format
-  int32_t getVelocity(); // PID_VELOCITY_ACTUAL
-  // Get the number of revolutions (upper 16 bits) and mechanical encoder angle
-  // (lower 16 bits)
-  int32_t getPostion(); // PID_POSITION_ACTUAL
-
-  // Switch I0 and I1 ADCs, if they are not in phase with PWM voltages
-  void setSwitchI0I1(bool doSwitch); // ADC_I_SELECT
-
-  // Set max pwm frequency in Hz
-  void setPwmFrequency(uint32_t frequency); // dsADC_MDEC_B_MDEC_A, PWM_MAXCNT
-
-  // Enable/Disable svpwm, should be default on for 3-phase, before calibration!
-  void setUseSvpwm(bool on); // PWM_SV_CHOP
-
-  void initEncoder(int16_t offset); // ABN_DECODER_MODE, ABN_DECODER_PPR,
-                                    // ABN_DECODER_PHI_E_PHI_M_OFFSET
-  void
-  initMotorTypeNpolePairs(MotorType motorType,
-                          uint16_t numPolePairs); // MOTOR_TYPE_N_POLE_PAIRS
-  void initTMC6100(); // PWM_BBM_H_BBM_L = 400ns, maybe also PWM_POLARITIES if
-                      // they don't already match
+             uint32_t maxPwmFrequency, CalibrationData calibration);
 
   CalibrationData autoCalibrate(
       uint64_t maxNumRetries, uint64_t numRetriesSuccess,
-      uint16_t jitter); // PHI_E_SELECTION = phi_e_openloop,
-                        // PIDOUT_UQ_UD_LIMITS, UQ_UD_EXT, make sure
-                        // initEncoder(0) and initMotorTypeNpoles() and
-                        // initTMC6100() are called first,
-                        // initCalibration() and initPhiePhim() afterwards
+      uint16_t jitter) const; // PHI_E_SELECTION, PIDOUT_UQ_UD_LIMITS, UQ_UD_EXT
 
-  void
-  initCalibration(CalibrationData calibration); // PHI_E_SELECTION = phi_e_abn
+  void initCalibration(CalibrationData calibration) const; // PHI_E_SELECTION
 
-  void setFluxPI(int16_t P, int16_t I);     // PID_FLUX_P_FLUX_I
-  void setTorquePI(int16_t P, int16_t I);   // PID_TORQUE_P_TORQUE_I
-  void setVelocityPI(int16_t P, int16_t I); // PID_VELOCITY_P_VELOCITY_I
-  void setPositionPI(int16_t P, int16_t I); // PID_POSITION_P_POSITION_I
+  void setTorqueTarget(int16_t value) const;   // PID_TORQUE_FLUX_TARGET
+  void setVelocityTarget(int32_t value) const; // PID_VELOCITY_TARGET
+  void setPositionTarget(int32_t value) const; // PID_POSITION_TARGET
 
-  void setCurrentLimit(int16_t limit);   // PID_TORQUE_FLUX_LIMITS
-  void setVelocityLimit(uint32_t limit); // PID_VELOCITY_LIMIT
+  // Get the actual torque in mA
+  int16_t getTorque() const; // PID_TORQUE_FLUX_ACTUAL
+  // Get the velocity in int32_t driver's format
+  int32_t getVelocity() const; // PID_VELOCITY_ACTUAL
+  // Get the number of revolutions (upper 16 bits) and mechanical encoder angle
+  // (lower 16 bits)
+  int32_t getPostion() const; // PID_POSITION_ACTUAL
+
+  void setMotionMode(MotionMode mode) const; // MODE_RAMP_MODE_MOTION
+
+  bool getStatus(StatusMask mask) const; // STATUS_MASK, STATUS_FLAGS
+
+  // Get phase currents in mA for power consumption monitoring
+  int16_t getIux() const; // ADC_IWY_IUX
+  int16_t getIv() const;  // ADC_IV
+  int16_t getIwy() const; // ADC_IWY_IUX
+
+  // Switch I0 and I1 ADCs, if they are not in phase with PWM voltages
+  void setSwitchI0I1(bool doSwitch) const; // ADC_I_SELECT
+
+  // Enable/Disable svpwm, should be default on for 3-phase, before calibration!
+  void setUseSvpwm(bool on) const; // PWM_SV_CHOP
+
+  void setFluxPI(int16_t P, int16_t I) const;     // PID_FLUX_P_FLUX_I
+  void setTorquePI(int16_t P, int16_t I) const;   // PID_TORQUE_P_TORQUE_I
+  void setVelocityPI(int16_t P, int16_t I) const; // PID_VELOCITY_P_VELOCITY_I
+  void setPositionPI(int16_t P, int16_t I) const; // PID_POSITION_P_POSITION_I
+
+  void setCurrentLimit(int16_t limit) const;   // PID_TORQUE_FLUX_LIMITS
+  void setVelocityLimit(uint32_t limit) const; // PID_VELOCITY_LIMIT
   void setPositionLimits(
       int32_t low,
-      int32_t high); // PID_POSITION_LIMIT_LOW, PID_POSITION_LIMIT_HIGH
+      int32_t high) const; // PID_POSITION_LIMIT_LOW, PID_POSITION_LIMIT_HIGH
 
-  void setMotionMode(MotionMode mode); // MODE_RAMP_MODE_MOTION
-
-  void setTorqueTarget(int16_t value);   // PID_TORQUE_FLUX_TARGET
-  void setVelocityTarget(int32_t value); // PID_VELOCITY_TARGET
-  void setPositionTarget(int32_t value); // PID_POSITION_TARGET
-
-  bool getStatus(
-      StatusMask mask); // set STATUS_MASK to 0xFFFFFFFF, then read STATUS_FLAGS
+  // Get raw adc current values for manual scaling/offset calibration
+  uint16_t getAdcRawDataI0() const;
+  uint16_t getAdcRawDataI1() const;
+  uint16_t getAdcRawDataVM() const;
 
 private:
-  // Set adc scales and offsets
-  // set default calculated SCALE to 325
-  void setAdcOffsets(uint16_t i0,
-                     uint16_t i1); // ADC_I0_SCALE_OFFSET, ADC_I1_SCALE_OFFSET
+  // Sets adc scales and offsets, default calculated SCALE is 325
+  void setAdcOffsets(uint16_t i0, uint16_t i1) const; // ADC_I0/1_SCALE_OFFSET
+
+  // Set max pwm frequency in Hz
+  void
+  setPwmFrequency(uint32_t frequency) const; // dsADC_MDEC_B_MDEC_A, PWM_MAXCNT
+
+  void initEncoder(int16_t offset) const; // ABN_DECODER_MODE, ABN_DECODER_PPR,
+                                          // ABN_DECODER_PHI_E_PHI_M_OFFSET
+
+  void initMotorTypeNpolePairs(
+      MotorType motorType,
+      uint16_t numPolePairs) const; // MOTOR_TYPE_N_POLE_PAIRS
+
+  void initTMC6100() const; // PWM_BBM_H_BBM_L
+
   SPIAdapter m_device;
 };
