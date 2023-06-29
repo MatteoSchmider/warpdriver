@@ -5,7 +5,7 @@ add_library(${PROJECT_NAME}
     src/WarpDriver.cpp
 )
 
-target_include_directories(${PROJECT_NAME}
-    INTERFACE
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/src
 )
