@@ -17,7 +17,7 @@ uint32_t RaspiSPI::readTMC4671(uint8_t address) const {
   bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);
   bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
   bcm2835_spi_setDataMode(BCM2835_SPI_MODE3);
-  char recv[5] = {0, 0, 0, 0, 0};
+  char recv[5] = {address | 0x80, 0, 0, 0, 0};
   bcm2835_spi_transfern(recv, sizeof(recv));
   bcm2835_gpio_write(m_tmc4671Pin, HIGH);
   bcm2835_spi_end();
