@@ -115,6 +115,9 @@ public:
   uint16_t getAdcRawDataI1() const;
   uint16_t getAdcRawDataVM() const;
 
+
+  uint32_t getHardwareInfo() const;
+
 private:
   // Sets adc scales and offsets, default calculated SCALE is 325
   void setAdcOffsets(uint16_t i0, uint16_t i1) const; // ADC_I0/1_SCALE_OFFSET

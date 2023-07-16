@@ -10,6 +10,10 @@ WarpDriver::WarpDriver(const SPIAdapter &device, MotorType motorType,
   initCalibration(calibration);
 }
 
+uint32_t WarpDriver::getHardwareInfo() const {
+  return m_device.readTMC4671(TMC4671_CHIPINFO_DATA);
+}
+
 uint16_t WarpDriver::getAdcRawDataI0() const {
   m_device.writeTMC4671(TMC4671_ADC_RAW_ADDR,
                         ADC_RAW_ADDR_ADC_I1_RAW_ADC_I0_RAW);
