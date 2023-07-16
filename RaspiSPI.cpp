@@ -3,24 +3,27 @@
 RaspiSPI::RaspiSPI(uint8_t tmc4671Pin, uint8_t tmc6100Pin, uint8_t as5047pPin)
     : SPIAdapter(), m_tmc4671Pin(tmc4671Pin), m_tmc6100Pin(tmc6100Pin),
       m_as5047pPin(as5047pPin) {
+  bcm2835_spi_begin();
+  bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+  bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);
+  bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
   bcm2835_gpio_write(m_tmc4671Pin, HIGH);
   bcm2835_gpio_write(m_tmc6100Pin, HIGH);
   bcm2835_gpio_write(m_as5047pPin, HIGH);
 }
 
-RaspiSPI::~RaspiSPI() {  }
+RaspiSPI::~RaspiSPI() { bcm2835_spi_end(); }
 
 uint32_t RaspiSPI::readTMC4671(uint8_t address) const {
   bcm2835_gpio_write(m_tmc4671Pin, LOW);
-  bcm2835_spi_begin();
-  bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
-  bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);
-  bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
+  bcm2835_delay(100);
   bcm2835_spi_setDataMode(BCM2835_SPI_MODE3);
+  bcm2835_delay(100);
   char recv[5] = {address, 0, 0, 0, 0};
   bcm2835_spi_transfern(recv, sizeof(recv));
+  bcm2835_delay(100);
   bcm2835_gpio_write(m_tmc4671Pin, HIGH);
-  bcm2835_spi_end();
+  bcm2835_delay(100);
   return (recv[1] << 24) | (recv[2] << 16) | (recv[3] << 8) | recv[4];
 }
 
