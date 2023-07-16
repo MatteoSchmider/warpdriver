@@ -4,10 +4,10 @@ WarpDriver::WarpDriver(const SPIAdapter &device, MotorType motorType,
                        uint16_t numPoles, uint32_t maxPwmFrequency,
                        CalibrationData calibration)
     : m_device(device) {
-  initTMC6100();
+/*  initTMC6100();
   initMotorTypeNpolePairs(motorType, numPoles);
   setPwmFrequency(maxPwmFrequency);
-  initCalibration(calibration);
+  initCalibration(calibration);*/
 }
 
 uint32_t WarpDriver::getHardwareInfo() const {
