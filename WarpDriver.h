@@ -63,7 +63,7 @@ public:
   };
 
   // Constructor
-  WarpDriver(const SPIAdapter &device, MotorType motorType, uint16_t numPoles,
+  WarpDriver(SPIAdapter *device, MotorType motorType, uint16_t numPoles,
              uint32_t maxPwmFrequency, CalibrationData calibration);
 
   CalibrationData autoCalibrate(
@@ -115,7 +115,6 @@ public:
   uint16_t getAdcRawDataI1() const;
   uint16_t getAdcRawDataVM() const;
 
-
   uint32_t getHardwareInfo() const;
 
 private:
@@ -135,5 +134,5 @@ private:
 
   void initTMC6100() const; // PWM_BBM_H_BBM_L
 
-  SPIAdapter m_device;
+  SPIAdapter *m_device;
 };
