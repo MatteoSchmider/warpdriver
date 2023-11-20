@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SPIAdapter.h"
-#include "bcm2835.h"
+#include "pigpio.h"
 
 class RaspiSPI : public SPIAdapter {
 public:
