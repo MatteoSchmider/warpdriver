@@ -1,3 +1,6 @@
 [submodule "TMC-API"]
 	path = TMC-API
 	url = https://github.com/trinamic/TMC-API.git
+[submodule "pigpio"]
+	path = pigpio
+	url = https://github.com/joan2937/pigpio.git
